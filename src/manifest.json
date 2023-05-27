@@ -1,0 +1,9 @@
+{
+  "name": "Untitled Musical App",
+  "short_name": "Untitled Musical App",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#000",
+  "description": "...",
+  "icons": []
+}
