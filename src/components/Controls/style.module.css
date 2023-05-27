@@ -1,0 +1,19 @@
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.button {
+  --height: 4rem;
+
+  background-color: var(--primary);
+  color: var(--content-on-dark);
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1rem;
+  height: var(--height);
+  line-height: var(--height);
+  text-align: center;
+  width: 100%;
+}

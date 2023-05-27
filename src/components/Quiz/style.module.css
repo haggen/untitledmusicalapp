@@ -1,0 +1,46 @@
+.quiz {
+  background-color: var(--secondary);
+  padding: var(--spacing-md);
+
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-content: center;
+  gap: var(--spacing-lg);
+  height: 100%;
+  text-align: center;
+}
+
+.question {
+  display: grid;
+  align-content: center;
+}
+
+.label {
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.title {
+  font-family: "Abril Fatface", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.button {
+  --height: 3.625rem;
+
+  border: 1px solid var(--primary);
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1rem;
+  height: var(--height);
+  line-height: var(--height);
+  text-align: center;
+  width: 100%;
+}
+
+.button + .button {
+  margin-top: var(--spacing-sm);
+}

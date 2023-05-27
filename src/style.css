@@ -1,1 +1,38 @@
 @import "npm:resetize";
+
+:root {
+  --spacing-lg: 2.5rem;
+  --spacing-md: 1.5rem;
+  --spacing-sm: 1rem;
+
+  --primary: black;
+  --secondary: gainsboro;
+  --background: white;
+
+  --content-on-dark: white;
+  --content-on-light: black;
+}
+
+div#root {
+  display: grid;
+  align-content: center;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--spacing-md);
+
+  max-width: 40rem;
+  margin-left: auto;
+  margin-right: auto;
+  min-height: 100vh;
+  padding: var(--spacing-md);
+}
+
+.main {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: var(--spacing-md);
+  height: 100%;
+}
+
+.footer {
+  text-align: center;
+}

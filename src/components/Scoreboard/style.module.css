@@ -1,0 +1,5 @@
+.scoreboard {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+}

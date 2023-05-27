@@ -1,0 +1,15 @@
+.score {
+  text-align: center;
+}
+
+.label {
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.value {
+  font-family: "Abril Fatface", sans-serif;
+  font-size: 2rem;
+  line-height: 1;
+  text-align: center;
+}
