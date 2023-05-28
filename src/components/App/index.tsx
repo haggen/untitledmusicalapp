@@ -1,11 +1,26 @@
 import { Scoreboard } from "~/src/components/Scoreboard";
 import { Quiz } from "~/src/components/Quiz";
 import { Controls } from "~/src/components/Controls";
-import { playSweep } from "~/src/lib/synthesizer";
+import { Accidental, Pitch, play } from "~/src/lib/synthesizer";
 
 export function App() {
-  const handleClick = () => {
-    playSweep();
+  const handleClick = async () => {
+    let n = await play({
+      pitch: Pitch.A,
+      octave: 3,
+      accidental: Accidental.Natural,
+      length: 0.5,
+    });
+
+    n = await play({ length: 0.5, currentTime: n });
+
+    void play({
+      pitch: Pitch.E,
+      octave: 4,
+      accidental: Accidental.Natural,
+      length: 0.5,
+      currentTime: n,
+    });
   };
 
   return (
