@@ -1,0 +1,28 @@
+.answer {
+  --height: 3.625rem;
+
+  border: 1px solid var(--primary);
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1rem;
+  height: var(--height);
+  line-height: var(--height);
+  text-align: center;
+  width: 100%;
+}
+
+.answer + .answer {
+  margin-top: var(--spacing-sm);
+}
+
+.unanswered {
+  background: transparent;
+}
+
+.correct {
+  background: green;
+}
+
+.incorrect {
+  background: red;
+}

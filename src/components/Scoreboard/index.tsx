@@ -1,13 +1,21 @@
-import * as classes from "./style.module.css";
+import * as classes from './style.module.css';
 
-import { Score } from "~/src/components/Score";
+import { Score } from '~/src/components/Score';
 
-export function Scoreboard() {
+type Props = {
+  scoreboard: {
+    correct: number;
+    incorrect: number;
+    accuracy: () => number;
+  };
+};
+
+export function Scoreboard({ scoreboard }: Props) {
   return (
     <div className={classes.scoreboard}>
-      <Score label="correct" value="12" />
-      <Score label="failed" value="6" />
-      <Score label="accuracy" value="66%" />
+      <Score label="correct" value={scoreboard.correct} />
+      <Score label="failed" value={scoreboard.incorrect} />
+      <Score label="accuracy" value={scoreboard.accuracy()} />
     </div>
   );
 }

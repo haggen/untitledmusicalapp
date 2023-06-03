@@ -1,9 +1,22 @@
-import * as classes from "./style.module.css";
+import * as classes from './style.module.css';
 
-export function Controls() {
+type Props = {
+  isAnsweredCorrectly: boolean;
+  onHearInterval: () => void;
+  onNext: () => void;
+};
+
+export function Controls({ isAnsweredCorrectly, onHearInterval, onNext }: Props) {
   return (
     <div className={classes.controls}>
-      <button className={classes.button}>Hear first question</button>
+      <button className={classes.button} type="button" onClick={onHearInterval}>
+        Hear the interval
+      </button>
+      {isAnsweredCorrectly && (
+        <button className={classes.button} type="button" onClick={onNext}>
+          Next
+        </button>
+      )}
     </div>
   );
 }

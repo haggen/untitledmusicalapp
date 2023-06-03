@@ -1,8 +1,8 @@
-import * as classes from "./style.module.css";
+import * as classes from './style.module.css';
 
 type Props = {
   label: string;
-  value: string;
+  value: number;
 };
 
 export function Score({ label, value }: Props) {
