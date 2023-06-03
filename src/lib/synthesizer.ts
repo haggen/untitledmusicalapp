@@ -1,15 +1,28 @@
 /**
- * Pitch classes and their respective offset from the reference pitch (A) in semitones.
+ * Sound synthesis parameters.
+ */
+type Synthesis = {
+  frequency: number;
+  type: OscillatorType;
+  startTime: number;
+  length: number;
+  peakGain: number;
+  attack: number;
+  release: number;
+};
+
+/**
+ * Pitch classes and their respective offset inside an octave in semitones.
  * @see https://en.wikipedia.org/wiki/Pitch_(music)
  */
 export enum Pitch {
-  C = -9,
-  D = -7,
-  E = -5,
-  F = -4,
-  G = -2,
-  A = 0,
-  B = 2,
+  C = 0,
+  D = 2,
+  E = 3,
+  F = 5,
+  G = 7,
+  A = 8,
+  B = 10,
 }
 
 /**
@@ -35,7 +48,7 @@ type Note = {
  * A "Playable" is something that has a start time and a duration.
  */
 type Playable = {
-  currentTime?: number;
+  startTime?: number;
   length: number;
 };
 
@@ -52,7 +65,7 @@ const audioContext = new AudioContext();
 const R = 1.059463094359;
 
 /**
- * The reference note: A4 (A above middle C).
+ * Our reference note with known frequency: A4 (A above middle C).
  */
 const A4 = {
   octave: 4,
@@ -62,7 +75,7 @@ const A4 = {
 };
 
 /**
- * Calculate semitones between two notes.
+ * Calculate difference in semitones from note A to B.
  */
 function getSemitonesBetween(a: Note, b: Note) {
   return (
@@ -80,6 +93,49 @@ function getFrequency(note: Note) {
 }
 
 /**
+ * Synthesize sound.
+ */
+function synthesize(parameters: Synthesis) {
+  const oscillatorNode = new OscillatorNode(audioContext, {
+    frequency: parameters.frequency,
+    type: parameters.type,
+  });
+
+  // Small tremolo effect to make it sound less digital.
+  const tremoloInterval = 0.05;
+  const tremoloMagnitude = 20;
+
+  oscillatorNode.detune.setValueCurveAtTime(
+    Array(parameters.length / tremoloInterval)
+      .fill(tremoloMagnitude)
+      .map((n, i) => (10 + Math.random() * n) * (i % 2 === 0 ? -1 : 1)),
+    parameters.startTime,
+    parameters.length
+  );
+
+  const gainNode = new GainNode(audioContext);
+
+  gainNode.gain.setValueAtTime(0, parameters.startTime);
+  gainNode.gain.linearRampToValueAtTime(
+    parameters.peakGain,
+    parameters.startTime + parameters.attack
+  );
+  gainNode.gain.setValueAtTime(
+    parameters.peakGain,
+    parameters.startTime + parameters.length - parameters.release
+  );
+  gainNode.gain.linearRampToValueAtTime(
+    0,
+    parameters.startTime + parameters.length
+  );
+
+  oscillatorNode.connect(gainNode).connect(audioContext.destination);
+
+  oscillatorNode.start(parameters.startTime);
+  oscillatorNode.stop(parameters.startTime + parameters.length);
+}
+
+/**
  * Play a playable and return the ending time.
  */
 export async function play(playable: Playable | (Playable & Note)) {
@@ -87,37 +143,21 @@ export async function play(playable: Playable | (Playable & Note)) {
     await audioContext.resume();
   }
 
-  const { currentTime = audioContext.currentTime, length } = playable;
+  const { startTime = audioContext.currentTime, length } = playable;
 
   if ("pitch" in playable) {
     const { pitch, octave, accidental = Accidental.Natural } = playable;
 
-    const oscillatorNode = new OscillatorNode(audioContext, {
+    synthesize({
       frequency: getFrequency({ octave, pitch, accidental }),
       type: "sine",
+      startTime,
+      length,
+      peakGain: 1,
+      attack: 0.05,
+      release: 0.05,
     });
-
-    console.log({
-      octave,
-      pitch,
-      accidental,
-      frequency: oscillatorNode.frequency.value,
-    });
-
-    const gainNode = new GainNode(audioContext);
-
-    // Attack and release for 10% of the note's length.
-    gainNode.gain.setValueCurveAtTime(
-      [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-      currentTime,
-      length
-    );
-
-    oscillatorNode.connect(gainNode).connect(audioContext.destination);
-
-    oscillatorNode.start(currentTime);
-    oscillatorNode.stop(currentTime + length);
   }
 
-  return currentTime + length;
+  return startTime + length;
 }
