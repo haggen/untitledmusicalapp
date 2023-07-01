@@ -2,16 +2,19 @@
 
 set -ue
 
+# shellcheck disable=SC2046
 md5sum $(git diff --diff-filter=ACMR --cached --name-only | xargs) > /tmp/pre-commit-summary
 
-echo "🔎 Checking code…"
+echo "---> Checking code… ⚠️" >&2
 
-npm run-script --silent format -- --write --loglevel silent
-npm run-script --silent lint -- --fix --quiet
+(
+	npm run-script --silent format -- --write
+	npm run-script --silent lint -- --fix
+) >/dev/null 2>&1 || :
 
-if md5sum --status --check /tmp/pre-commit-summary; then
-	echo "✅ All good."
-else
-	echo "🚫 The pre-commit hook changed some of the files being commited."
+if ! md5sum --status --check /tmp/pre-commit-summary; then
+	echo "---> The pre-commit hook has changed some of the files being commited. Please review these changes and try again. ❌" >&2
 	exit 1
 fi
+
+echo "---> All good. ✅" >&2
