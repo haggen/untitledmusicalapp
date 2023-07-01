@@ -9,6 +9,7 @@ type Synthesis = {
   peakGain: number;
   attack: number;
   release: number;
+  detunePeak: number;
 };
 
 /**
@@ -23,6 +24,26 @@ export enum Pitch {
   G = 7,
   A = 8,
   B = 10,
+}
+
+/**
+ * Interval in semitones.
+ * @see https://en.wikipedia.org/wiki/Interval_(music)
+ */
+export enum Interval {
+  Unison = 0,
+  MinorSecond = 1,
+  MajorSecond = 2,
+  MinorThird = 3,
+  MajorThird = 4,
+  PerfectFourth = 5,
+  Tritone = 6,
+  PerfectFifth = 7,
+  MinorSixth = 8,
+  MajorSixth = 9,
+  MinorSeventh = 10,
+  MajorSeventh = 11,
+  Octave = 12,
 }
 
 /**
@@ -89,29 +110,31 @@ function getSemitonesBetween(a: Note, b: Note) {
  * Calculate frequency of a note in hertz.
  */
 function getFrequency(note: Note) {
-  return A4.frequency * Math.pow(R, getSemitonesBetween(note, A4));
+  return A4.frequency * Math.pow(R, getSemitonesBetween(A4, note));
 }
 
 /**
  * Synthesize sound.
  */
-function synthesize(parameters: Synthesis) {
+async function synthesize(parameters: Synthesis) {
+  if (audioContext.state === "suspended") {
+    await audioContext.resume();
+  }
+
   const oscillatorNode = new OscillatorNode(audioContext, {
     frequency: parameters.frequency,
     type: parameters.type,
   });
 
-  // Small tremolo effect to make it sound less digital.
-  const tremoloInterval = 0.05;
-  const tremoloMagnitude = 20;
-
-  oscillatorNode.detune.setValueCurveAtTime(
-    Array(parameters.length / tremoloInterval)
-      .fill(tremoloMagnitude)
-      .map((n, i) => (10 + Math.random() * n) * (i % 2 === 0 ? -1 : 1)),
-    parameters.startTime,
-    parameters.length
-  );
+  if (parameters.detunePeak > 0) {
+    oscillatorNode.detune.setValueCurveAtTime(
+      Array(parameters.length / 0.05)
+        .fill(parameters.detunePeak)
+        .map((n, i) => Math.random() * n * (i % 2 === 0 ? -1 : 1)),
+      parameters.startTime,
+      parameters.length
+    );
+  }
 
   const gainNode = new GainNode(audioContext);
 
@@ -138,24 +161,28 @@ function synthesize(parameters: Synthesis) {
 /**
  * Play a playable and return the ending time.
  */
-export async function play(playable: Playable | (Playable & Note)) {
-  if (audioContext.state === "suspended") {
-    await audioContext.resume();
-  }
-
+export async function play(
+  playable: Playable | (Playable & Note),
+  interval: Interval = 0
+) {
   const { startTime = audioContext.currentTime, length } = playable;
 
   if ("pitch" in playable) {
     const { pitch, octave, accidental = Accidental.Natural } = playable;
 
-    synthesize({
-      frequency: getFrequency({ octave, pitch, accidental }),
+    await synthesize({
+      frequency: getFrequency({
+        octave,
+        pitch,
+        accidental: accidental + interval,
+      }),
       type: "sine",
       startTime,
       length,
       peakGain: 1,
       attack: 0.05,
       release: 0.05,
+      detunePeak: 20,
     });
   }
 
