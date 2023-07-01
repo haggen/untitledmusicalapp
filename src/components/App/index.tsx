@@ -5,34 +5,38 @@ import { Quiz } from '~/src/components/Quiz';
 import { Controls } from '~/src/components/Controls';
 import { Accidental, Pitch, play } from '~/src/lib/synthesizer';
 
-export function App() {
-  const scoreboard = {
-    correct: 10,
-    incorrect: 4,
-    accuracy: () => Math.round((scoreboard.correct / (scoreboard.correct + scoreboard.incorrect)) * 1000) / 10,
-  };
+function getScoreAccuracy(correct: number, incorrect: number) {
+  if (correct <= 0 || incorrect <= 0) {
+    return 0;
+  }
+  return Math.round((correct / (correct + incorrect)) * 100);
+}
 
-  const possibleAnswers = [
-    {
-      id: 1,
-      label: 'Minor 2nd',
-      isCorrect: false,
-    },
-    {
-      id: 2,
-      label: 'Perfect 5th',
-      isCorrect: true,
-    },
-    {
-      id: 3,
-      label: 'Octave',
-      isCorrect: false,
-    },
+function getCorrectOption(array: { id: number; label: string; isCorrect: boolean }[]) {
+  return array.find((option) => option.isCorrect)?.id ?? null;
+}
+
+export function App() {
+  const [round, setRound] = useState(1);
+
+  const [{ correct, incorrect }, setScoreboard] = useState({
+    correct: 0,
+    incorrect: 0,
+  });
+
+  const options = [
+    { id: 0, label: 'Minor 2nd', isCorrect: false },
+    { id: 1, label: 'Perfect 5th', isCorrect: true },
+    { id: 2, label: 'Octave', isCorrect: false },
   ];
 
-  const [isAnsweredCorrectly, setIsAnsweredCorrectly] = useState(false);
+  const [isAnswered, setIsAnswered] = useState(false);
+  const [isAnsweredCorrectly, setIsAnsweredCorrectly] = useState<boolean | null>(null);
+  const [isRoundOver, setIsRoundOver] = useState<boolean | null>(null);
 
-  const handleClick = async () => {
+  const correctOption = getCorrectOption(options) ?? null;
+
+  const handleHear = async () => {
     let n = await play({
       pitch: Pitch.A,
       octave: 3,
@@ -51,18 +55,39 @@ export function App() {
     });
   };
 
+  const handleNewRound = () => {
+    setRound((prev) => prev + 1);
+    setIsAnswered(false);
+    setIsAnsweredCorrectly(null);
+    setIsRoundOver(null);
+  };
+
   const handleNext = () => {
-    return;
+    handleNewRound();
+
+    if (isAnsweredCorrectly) {
+      setScoreboard((prev) => ({ ...prev, correct: prev.correct + 1 }));
+    } else {
+      setScoreboard((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
+    }
   };
 
   return (
     <>
       <header className="header">
-        <Scoreboard scoreboard={scoreboard} />
+        <Scoreboard correct={correct} incorrect={incorrect} accuracy={getScoreAccuracy(correct, incorrect)} />
       </header>
       <main className="main">
-        <Quiz possibleAnswers={possibleAnswers} setIsAnsweredCorrectly={setIsAnsweredCorrectly} />
-        <Controls isAnsweredCorrectly={isAnsweredCorrectly} onHearInterval={handleClick} onNext={handleNext} />
+        <Quiz
+          round={round}
+          options={options}
+          correctOption={correctOption}
+          isAnswered={isAnswered}
+          setIsAnswered={setIsAnswered}
+          setIsAnsweredCorrectly={setIsAnsweredCorrectly}
+          setIsRoundOver={setIsRoundOver}
+        />
+        <Controls isRoundOver={isRoundOver} onHearInterval={handleHear} onNext={handleNext} />
       </main>
       <footer className="footer">
         {/* prettier-ignore */}

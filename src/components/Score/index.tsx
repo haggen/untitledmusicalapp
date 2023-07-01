@@ -1,15 +1,17 @@
+import { ReactNode } from 'react';
+
 import * as classes from './style.module.css';
 
 type Props = {
   label: string;
-  value: number;
+  children: ReactNode;
 };
 
-export function Score({ label, value }: Props) {
+export function Score({ label, children }: Props) {
   return (
     <dl className={classes.score}>
       <dt className={classes.label}>{label}</dt>
-      <dd className={classes.value}>{value}</dd>
+      <dd className={classes.value}>{children}</dd>
     </dl>
   );
 }

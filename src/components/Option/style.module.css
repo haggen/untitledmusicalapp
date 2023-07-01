@@ -1,4 +1,4 @@
-.answer {
+.option {
   --height: 3.625rem;
 
   border: 1px solid var(--primary);
@@ -11,12 +11,8 @@
   width: 100%;
 }
 
-.answer + .answer {
+.option + .option {
   margin-top: var(--spacing-sm);
-}
-
-.unanswered {
-  background: transparent;
 }
 
 .correct {
