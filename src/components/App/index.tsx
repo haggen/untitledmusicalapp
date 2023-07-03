@@ -18,6 +18,7 @@ function getCorrectOptionId(array: { id: number; label: string; isCorrect: boole
 
 export function App() {
   const [round, setRound] = useState(1);
+  const [selectedOptions, setSelectedOptions] = useState<{ [key: number]: 'correct' | 'incorrect' }>({});
 
   const [{ correct, incorrect }, setScoreboard] = useState({
     correct: 0,
@@ -30,12 +31,11 @@ export function App() {
     { id: 2, label: 'Octave', isCorrect: false },
   ];
 
-  const [isAnswered, setIsAnswered] = useState(false);
-  const [isAnsweredCorrectly, setIsAnsweredCorrectly] = useState<boolean | null>(null);
-  const [isRoundOver, setIsRoundOver] = useState<boolean | null>(null);
-  const [selectedOptions, setSelectedOptions] = useState<{ [key: number]: 'correct' | 'incorrect' }>({});
-
   const correctOption = getCorrectOptionId(options) ?? null;
+  const isFirstAttempt = Object.keys(selectedOptions).length === 1;
+  const isCorrectOptionSelected = Object.values(selectedOptions).includes('correct');
+  const isAnsweredCorrectly = isFirstAttempt && isCorrectOptionSelected;
+  const isRoundOver = isCorrectOptionSelected;
 
   const handleHear = async () => {
     let n = await play({
@@ -63,26 +63,11 @@ export function App() {
       ...previousSelectedOptions,
       [optionId]: isOptionCorrect ? 'correct' : 'incorrect',
     }));
-
-    // Set isAnswered to true when the user selects an option.
-    setIsAnswered(true);
-
-    // Set anwseredCorrectly to true if the first attempt is correct.
-    if (isOptionCorrect && !isAnswered) {
-      setIsAnsweredCorrectly(true);
-    }
-
-    // Set isRoundOver to true when the user selects the correct option.
-    if (isOptionCorrect && (isAnswered || !isAnswered)) {
-      setIsRoundOver(true);
-    }
   };
 
   const handleNewRound = () => {
     setRound((prev) => prev + 1);
-    setIsAnswered(false);
-    setIsAnsweredCorrectly(null);
-    setIsRoundOver(null);
+    setSelectedOptions({});
   };
 
   const handleNext = () => {
@@ -94,10 +79,6 @@ export function App() {
       setScoreboard((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
     }
   };
-
-  useEffect(() => {
-    setSelectedOptions({});
-  }, [round]);
 
   return (
     <>
