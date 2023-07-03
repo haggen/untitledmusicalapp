@@ -1,5 +1,3 @@
-import { useState, useEffect } from 'react';
-
 import * as classes from './style.module.css';
 
 import { Option } from '~/src/components/Option';
@@ -11,42 +9,11 @@ type Props = {
     label: string;
     isCorrect: boolean;
   }[];
-  correctOption: number | null;
-  isAnswered: boolean;
-  setIsAnswered: (isAnswered: boolean) => void;
-  setIsAnsweredCorrectly: (isAnsweredCorrectly: boolean) => void;
-  setIsRoundOver: (isCorrect: boolean) => void;
+  selectedOptions: { [key: number]: 'correct' | 'incorrect' };
+  onSelect: (optionId: number) => void;
 };
 
-export function Quiz({ round, options, correctOption, isAnswered, setIsAnswered, setIsAnsweredCorrectly, setIsRoundOver }: Props) {
-  const [optionsState, setOptionsState] = useState<{ [key: number]: 'correct' | 'incorrect' }>({});
-
-  const handleSelect = (optionId: number) => {
-    const isOptionCorrect = correctOption === optionId;
-
-    setOptionsState((previousState) => ({
-      ...previousState,
-      [optionId]: isOptionCorrect ? 'correct' : 'incorrect',
-    }));
-
-    // Set isAnswered to true when the user selects an option.
-    setIsAnswered(true);
-
-    // Set anwseredCorrectly to true if the first attempt is correct.
-    if (isOptionCorrect && !isAnswered) {
-      setIsAnsweredCorrectly(true);
-    }
-
-    // Set isRoundOver to true when the user selects the correct option.
-    if (isOptionCorrect && (isAnswered || !isAnswered)) {
-      setIsRoundOver(true);
-    }
-  };
-
-  useEffect(() => {
-    setOptionsState({});
-  }, [round]);
-
+export function Quiz({ round, options, selectedOptions, onSelect }: Props) {
   return (
     <div className={classes.quiz}>
       <div className={classes.question}>
@@ -55,7 +22,7 @@ export function Quiz({ round, options, correctOption, isAnswered, setIsAnswered,
       </div>
       <div className={classes.options}>
         {options.map(({ id, label }) => (
-          <Option key={id} label={label} state={optionsState[id]} onSelect={() => handleSelect(id)} />
+          <Option key={id} label={label} state={selectedOptions[id]} onSelect={() => onSelect(id)} />
         ))}
       </div>
     </div>

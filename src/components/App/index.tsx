@@ -1,18 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Scoreboard } from '~/src/components/Scoreboard';
 import { Quiz } from '~/src/components/Quiz';
 import { Controls } from '~/src/components/Controls';
 import { Accidental, Pitch, play } from '~/src/lib/synthesizer';
 
-function getScoreAccuracy(correct: number, incorrect: number) {
+function calculateAccuracy(correct: number, incorrect: number) {
   if (correct <= 0 || incorrect <= 0) {
     return 0;
   }
   return Math.round((correct / (correct + incorrect)) * 100);
 }
 
-function getCorrectOption(array: { id: number; label: string; isCorrect: boolean }[]) {
+function getCorrectOptionId(array: { id: number; label: string; isCorrect: boolean }[]) {
   return array.find((option) => option.isCorrect)?.id ?? null;
 }
 
@@ -33,8 +33,9 @@ export function App() {
   const [isAnswered, setIsAnswered] = useState(false);
   const [isAnsweredCorrectly, setIsAnsweredCorrectly] = useState<boolean | null>(null);
   const [isRoundOver, setIsRoundOver] = useState<boolean | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<{ [key: number]: 'correct' | 'incorrect' }>({});
 
-  const correctOption = getCorrectOption(options) ?? null;
+  const correctOption = getCorrectOptionId(options) ?? null;
 
   const handleHear = async () => {
     let n = await play({
@@ -55,6 +56,28 @@ export function App() {
     });
   };
 
+  const handleSelect = (optionId: number) => {
+    const isOptionCorrect = correctOption === optionId;
+
+    setSelectedOptions((previousSelectedOptions) => ({
+      ...previousSelectedOptions,
+      [optionId]: isOptionCorrect ? 'correct' : 'incorrect',
+    }));
+
+    // Set isAnswered to true when the user selects an option.
+    setIsAnswered(true);
+
+    // Set anwseredCorrectly to true if the first attempt is correct.
+    if (isOptionCorrect && !isAnswered) {
+      setIsAnsweredCorrectly(true);
+    }
+
+    // Set isRoundOver to true when the user selects the correct option.
+    if (isOptionCorrect && (isAnswered || !isAnswered)) {
+      setIsRoundOver(true);
+    }
+  };
+
   const handleNewRound = () => {
     setRound((prev) => prev + 1);
     setIsAnswered(false);
@@ -72,21 +95,17 @@ export function App() {
     }
   };
 
+  useEffect(() => {
+    setSelectedOptions({});
+  }, [round]);
+
   return (
     <>
       <header className="header">
-        <Scoreboard correct={correct} incorrect={incorrect} accuracy={getScoreAccuracy(correct, incorrect)} />
+        <Scoreboard correct={correct} incorrect={incorrect} accuracy={calculateAccuracy(correct, incorrect)} />
       </header>
       <main className="main">
-        <Quiz
-          round={round}
-          options={options}
-          correctOption={correctOption}
-          isAnswered={isAnswered}
-          setIsAnswered={setIsAnswered}
-          setIsAnsweredCorrectly={setIsAnsweredCorrectly}
-          setIsRoundOver={setIsRoundOver}
-        />
+        <Quiz round={round} options={options} selectedOptions={selectedOptions} onSelect={handleSelect} />
         <Controls isRoundOver={isRoundOver} onHearInterval={handleHear} onNext={handleNext} />
       </main>
       <footer className="footer">
