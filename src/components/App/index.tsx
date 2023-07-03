@@ -32,10 +32,8 @@ export function App() {
   ];
 
   const correctOption = getCorrectOptionId(options) ?? null;
-  const isFirstAttempt = Object.keys(selectedOptions).length === 1;
-  const isCorrectOptionSelected = Object.values(selectedOptions).includes('correct');
-  const isAnsweredCorrectly = isFirstAttempt && isCorrectOptionSelected;
-  const isRoundOver = isCorrectOptionSelected;
+  const isFirstAttempt = Object.keys(selectedOptions).length === 0;
+  const isRoundOver = Object.values(selectedOptions).includes('correct');
 
   const handleHear = async () => {
     let n = await play({
@@ -63,6 +61,14 @@ export function App() {
       ...previousSelectedOptions,
       [optionId]: isOptionCorrect ? 'correct' : 'incorrect',
     }));
+
+    if (isOptionCorrect && isFirstAttempt) {
+      setScoreboard((prev) => ({ ...prev, correct: prev.correct + 1 }));
+    }
+
+    if (!isOptionCorrect && isFirstAttempt) {
+      setScoreboard((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
+    }
   };
 
   const handleNewRound = () => {
@@ -70,14 +76,8 @@ export function App() {
     setSelectedOptions({});
   };
 
-  const handleNext = () => {
+  const handleNextRound = () => {
     handleNewRound();
-
-    if (isAnsweredCorrectly) {
-      setScoreboard((prev) => ({ ...prev, correct: prev.correct + 1 }));
-    } else {
-      setScoreboard((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
-    }
   };
 
   return (
@@ -86,8 +86,8 @@ export function App() {
         <Scoreboard correct={correct} incorrect={incorrect} accuracy={calculateAccuracy(correct, incorrect)} />
       </header>
       <main className="main">
-        <Quiz round={round} options={options} selectedOptions={selectedOptions} onSelect={handleSelect} />
-        <Controls isRoundOver={isRoundOver} onHearInterval={handleHear} onNext={handleNext} />
+        <Quiz round={round} options={options} selectedOptions={selectedOptions} onSelectOption={handleSelect} />
+        <Controls isRoundOver={isRoundOver} onHearInterval={handleHear} onNext={handleNextRound} />
       </main>
       <footer className="footer">
         {/* prettier-ignore */}

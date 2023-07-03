@@ -10,10 +10,10 @@ type Props = {
     isCorrect: boolean;
   }[];
   selectedOptions: { [key: number]: 'correct' | 'incorrect' };
-  onSelect: (optionId: number) => void;
+  onSelectOption: (optionId: number) => void;
 };
 
-export function Quiz({ round, options, selectedOptions, onSelect }: Props) {
+export function Quiz({ round, options, selectedOptions, onSelectOption }: Props) {
   return (
     <div className={classes.quiz}>
       <div className={classes.question}>
@@ -22,7 +22,7 @@ export function Quiz({ round, options, selectedOptions, onSelect }: Props) {
       </div>
       <div className={classes.options}>
         {options.map(({ id, label }) => (
-          <Option key={id} label={label} state={selectedOptions[id]} onSelect={() => onSelect(id)} />
+          <Option key={id} label={label} state={selectedOptions[id]} onSelect={() => onSelectOption(id)} />
         ))}
       </div>
     </div>
