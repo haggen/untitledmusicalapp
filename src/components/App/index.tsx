@@ -76,10 +76,6 @@ export function App() {
     setSelectedOptions({});
   };
 
-  const handleNextRound = () => {
-    handleNewRound();
-  };
-
   return (
     <>
       <header className="header">
@@ -87,7 +83,7 @@ export function App() {
       </header>
       <main className="main">
         <Quiz round={round} options={options} selectedOptions={selectedOptions} onSelectOption={handleSelect} />
-        <Controls isRoundOver={isRoundOver} onHearInterval={handleHear} onNext={handleNextRound} />
+        <Controls isRoundOver={isRoundOver} onHearInterval={handleHear} onNextRound={handleNewRound} />
       </main>
       <footer className="footer">
         {/* prettier-ignore */}
