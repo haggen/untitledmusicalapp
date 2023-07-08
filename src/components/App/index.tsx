@@ -6,8 +6,8 @@ import { Controls } from "~/src/components/Controls";
 import { Accidental, Pitch, play } from "~/src/lib/synthesizer";
 
 export type TOption = {
-  id: number;
   label: string;
+  value: number;
 };
 
 function calculateAccuracy(correct: number, incorrect: number) {
@@ -17,19 +17,19 @@ function calculateAccuracy(correct: number, incorrect: number) {
   return Math.round((correct / (correct + incorrect)) * 100);
 }
 
-const availableOptions = [
-  { id: 0, label: "Minor 2nd", value: 1 },
-  { id: 1, label: "Major 2nd", value: 2 },
-  { id: 2, label: "Minor 3rd", value: 3 },
-  { id: 3, label: "Major 3rd", value: 4 },
-  { id: 4, label: "Perfect 4th", value: 5 },
-  { id: 5, label: "Tritone", value: 6 },
-  { id: 6, label: "Perfect 5th", value: 7 },
-  { id: 7, label: "Minor 6th", value: 8 },
-  { id: 8, label: "Major 6th", value: 9 },
-  { id: 9, label: "Minor 7th", value: 10 },
-  { id: 10, label: "Major 7th", value: 11 },
-  { id: 11, label: "Octave", value: 12 },
+const availableOptions: TOption[] = [
+  { label: "Minor 2nd", value: 1 },
+  { label: "Major 2nd", value: 2 },
+  { label: "Minor 3rd", value: 3 },
+  { label: "Major 3rd", value: 4 },
+  { label: "Perfect 4th", value: 5 },
+  { label: "Tritone", value: 6 },
+  { label: "Perfect 5th", value: 7 },
+  { label: "Minor 6th", value: 8 },
+  { label: "Major 6th", value: 9 },
+  { label: "Minor 7th", value: 10 },
+  { label: "Major 7th", value: 11 },
+  { label: "Octave", value: 12 },
 ];
 
 function drawRandomOption(options: TOption[]) {

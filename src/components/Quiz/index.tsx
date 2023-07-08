@@ -28,7 +28,7 @@ export function Quiz({
       <div className={classes.options}>
         {options.map((option) => (
           <Option
-            key={option.id}
+            key={option.label}
             label={option.label}
             state={getOptionState(option, correctOption, selectedOptions)}
             onSelect={() => onSelectOption(option)}
