@@ -11,9 +11,9 @@ type Props = {
 export function Scoreboard({ correct, incorrect, accuracy }: Props) {
   return (
     <div className={classes.scoreboard}>
-      <Score label="correct">{correct}</Score>
-      <Score label="failed">{incorrect}</Score>
-      <Score label="accuracy">{accuracy}%</Score>
+      <Score label="Correct">{correct}</Score>
+      <Score label="Wrong">{incorrect}</Score>
+      <Score label="Accuracy">{accuracy}%</Score>
     </div>
   );
 }
