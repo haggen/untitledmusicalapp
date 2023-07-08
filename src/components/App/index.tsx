@@ -62,12 +62,12 @@ export function App() {
       [optionId]: isOptionCorrect ? 'correct' : 'incorrect',
     }));
 
-    if (isOptionCorrect && isFirstAttempt) {
-      setScoreboard((prev) => ({ ...prev, correct: prev.correct + 1 }));
-    }
-
-    if (!isOptionCorrect && isFirstAttempt) {
-      setScoreboard((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
+    if (isFirstAttempt) {
+      if (isOptionCorrect) {
+        setScoreboard((prev) => ({ ...prev, correct: prev.correct + 1 }));
+      } else {
+        setScoreboard((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
+      }
     }
   };
 
