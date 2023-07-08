@@ -2,7 +2,7 @@ import * as classes from "./style.module.css";
 
 type Props = {
   label: string;
-  state: "correct" | "incorrect";
+  state: "correct" | "incorrect" | "unselected";
   onSelect: () => void;
 };
 

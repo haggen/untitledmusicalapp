@@ -15,6 +15,10 @@
   margin-top: var(--spacing-sm);
 }
 
+.unselected {
+  background: lightskyblue;
+}
+
 .correct {
   background: green;
 }
