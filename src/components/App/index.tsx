@@ -27,7 +27,7 @@ const availablePitches = [
   Pitch.G,
 ];
 
-const availableOctaves = [2, 3, 4, 5];
+const availableOctaves = [2, 3, 4];
 
 const availableOptions: TOption[] = [
   { label: "Minor 2nd", value: 1 },
