@@ -17,6 +17,18 @@ function calculateAccuracy(correct: number, incorrect: number) {
   return Math.round((correct / (correct + incorrect)) * 100);
 }
 
+const availablePitches = [
+  Pitch.A,
+  Pitch.B,
+  Pitch.C,
+  Pitch.D,
+  Pitch.E,
+  Pitch.F,
+  Pitch.G,
+];
+
+const availableOctaves = [2, 3, 4, 5];
+
 const availableOptions: TOption[] = [
   { label: "Minor 2nd", value: 1 },
   { label: "Major 2nd", value: 2 },
@@ -37,6 +49,16 @@ function drawRandomOption(options: TOption[]) {
   return options[index];
 }
 
+function drawRandomNote() {
+  const pitchIndex = Math.floor(Math.random() * availablePitches.length);
+  const octaveIndex = Math.floor(Math.random() * availableOctaves.length);
+
+  return {
+    pitch: availablePitches[pitchIndex],
+    octave: availableOctaves[octaveIndex],
+  };
+}
+
 export function App() {
   const [round, setRound] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState<TOption[]>([]);
@@ -52,6 +74,7 @@ export function App() {
     availableOptions[11],
   ];
 
+  const [referenceNote, setReferenceNote] = useState(drawRandomNote());
   const [correctOption, setCorrectOption] = useState(
     drawRandomOption(displayedOptions)
   );
@@ -60,21 +83,24 @@ export function App() {
 
   const handleHear = () => {
     let n = play({
-      pitch: Pitch.A,
-      octave: 3,
+      pitch: referenceNote.pitch,
+      octave: referenceNote.octave,
       accidental: Accidental.Natural,
       length: 0.5,
     });
 
     n = play({ length: 0.5, startTime: n });
 
-    play({
-      pitch: Pitch.E,
-      octave: 4,
-      accidental: Accidental.Natural,
-      length: 0.5,
-      startTime: n,
-    });
+    play(
+      {
+        pitch: referenceNote.pitch,
+        octave: referenceNote.octave,
+        accidental: Accidental.Natural,
+        length: 0.5,
+        startTime: n,
+      },
+      correctOption.value
+    );
   };
 
   const handleSelect = (selectedOption: TOption) => {
@@ -97,6 +123,7 @@ export function App() {
     setRound((prev) => prev + 1);
     setSelectedOptions([]);
     setCorrectOption(drawRandomOption(displayedOptions));
+    setReferenceNote(drawRandomNote());
   };
 
   return (
