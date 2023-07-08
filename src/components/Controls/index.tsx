@@ -1,4 +1,4 @@
-import * as classes from './style.module.css';
+import * as classes from "./style.module.css";
 
 type Props = {
   isRoundOver: boolean | null;

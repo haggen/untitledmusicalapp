@@ -1,6 +1,6 @@
-import * as classes from './style.module.css';
+import * as classes from "./style.module.css";
 
-import { Score } from '~/src/components/Score';
+import { Score } from "~/src/components/Score";
 
 type Props = {
   correct: number;

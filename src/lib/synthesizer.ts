@@ -116,9 +116,9 @@ function getFrequency(note: Note) {
 /**
  * Synthesize sound.
  */
-async function synthesize(parameters: Synthesis) {
+function synthesize(parameters: Synthesis) {
   if (audioContext.state === "suspended") {
-    await audioContext.resume();
+    void audioContext.resume();
   }
 
   const oscillatorNode = new OscillatorNode(audioContext, {
@@ -161,7 +161,7 @@ async function synthesize(parameters: Synthesis) {
 /**
  * Play a playable and return the ending time.
  */
-export async function play(
+export function play(
   playable: Playable | (Playable & Note),
   interval: Interval = 0
 ) {
@@ -170,7 +170,7 @@ export async function play(
   if ("pitch" in playable) {
     const { pitch, octave, accidental = Accidental.Natural } = playable;
 
-    await synthesize({
+    synthesize({
       frequency: getFrequency({
         octave,
         pitch,

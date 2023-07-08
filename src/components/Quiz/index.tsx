@@ -1,6 +1,6 @@
-import * as classes from './style.module.css';
+import * as classes from "./style.module.css";
 
-import { Option } from '~/src/components/Option';
+import { Option } from "~/src/components/Option";
 
 type Props = {
   round: number;
@@ -9,11 +9,16 @@ type Props = {
     label: string;
     isCorrect: boolean;
   }[];
-  selectedOptions: { [key: number]: 'correct' | 'incorrect' };
+  selectedOptions: { [key: number]: "correct" | "incorrect" };
   onSelectOption: (optionId: number) => void;
 };
 
-export function Quiz({ round, options, selectedOptions, onSelectOption }: Props) {
+export function Quiz({
+  round,
+  options,
+  selectedOptions,
+  onSelectOption,
+}: Props) {
   return (
     <div className={classes.quiz}>
       <div className={classes.question}>
@@ -22,7 +27,12 @@ export function Quiz({ round, options, selectedOptions, onSelectOption }: Props)
       </div>
       <div className={classes.options}>
         {options.map(({ id, label }) => (
-          <Option key={id} label={label} state={selectedOptions[id]} onSelect={() => onSelectOption(id)} />
+          <Option
+            key={id}
+            label={label}
+            state={selectedOptions[id]}
+            onSelect={() => onSelectOption(id)}
+          />
         ))}
       </div>
     </div>

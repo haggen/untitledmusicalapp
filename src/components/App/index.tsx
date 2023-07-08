@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from "react";
 
-import { Scoreboard } from '~/src/components/Scoreboard';
-import { Quiz } from '~/src/components/Quiz';
-import { Controls } from '~/src/components/Controls';
-import { Accidental, Pitch, play } from '~/src/lib/synthesizer';
+import { Scoreboard } from "~/src/components/Scoreboard";
+import { Quiz } from "~/src/components/Quiz";
+import { Controls } from "~/src/components/Controls";
+import { Accidental, Pitch, play } from "~/src/lib/synthesizer";
 
 function calculateAccuracy(correct: number, incorrect: number) {
   if (correct <= 0 || incorrect <= 0) {
@@ -12,13 +12,17 @@ function calculateAccuracy(correct: number, incorrect: number) {
   return Math.round((correct / (correct + incorrect)) * 100);
 }
 
-function getCorrectOptionId(array: { id: number; label: string; isCorrect: boolean }[]) {
+function getCorrectOptionId(
+  array: { id: number; label: string; isCorrect: boolean }[]
+) {
   return array.find((option) => option.isCorrect)?.id ?? null;
 }
 
 export function App() {
   const [round, setRound] = useState(1);
-  const [selectedOptions, setSelectedOptions] = useState<{ [key: number]: 'correct' | 'incorrect' }>({});
+  const [selectedOptions, setSelectedOptions] = useState<{
+    [key: number]: "correct" | "incorrect";
+  }>({});
 
   const [{ correct, incorrect }, setScoreboard] = useState({
     correct: 0,
@@ -26,31 +30,31 @@ export function App() {
   });
 
   const options = [
-    { id: 0, label: 'Minor 2nd', isCorrect: false },
-    { id: 1, label: 'Perfect 5th', isCorrect: true },
-    { id: 2, label: 'Octave', isCorrect: false },
+    { id: 0, label: "Minor 2nd", isCorrect: false },
+    { id: 1, label: "Perfect 5th", isCorrect: true },
+    { id: 2, label: "Octave", isCorrect: false },
   ];
 
   const correctOption = getCorrectOptionId(options) ?? null;
   const isFirstAttempt = Object.keys(selectedOptions).length === 0;
-  const isRoundOver = Object.values(selectedOptions).includes('correct');
+  const isRoundOver = Object.values(selectedOptions).includes("correct");
 
-  const handleHear = async () => {
-    let n = await play({
+  const handleHear = () => {
+    let n = play({
       pitch: Pitch.A,
       octave: 3,
       accidental: Accidental.Natural,
       length: 0.5,
     });
 
-    n = await play({ length: 0.5, currentTime: n });
+    n = play({ length: 0.5, startTime: n });
 
-    void play({
+    play({
       pitch: Pitch.E,
       octave: 4,
       accidental: Accidental.Natural,
       length: 0.5,
-      currentTime: n,
+      startTime: n,
     });
   };
 
@@ -59,7 +63,7 @@ export function App() {
 
     setSelectedOptions((previousSelectedOptions) => ({
       ...previousSelectedOptions,
-      [optionId]: isOptionCorrect ? 'correct' : 'incorrect',
+      [optionId]: isOptionCorrect ? "correct" : "incorrect",
     }));
 
     if (isFirstAttempt) {
@@ -79,11 +83,24 @@ export function App() {
   return (
     <>
       <header className="header">
-        <Scoreboard correct={correct} incorrect={incorrect} accuracy={calculateAccuracy(correct, incorrect)} />
+        <Scoreboard
+          correct={correct}
+          incorrect={incorrect}
+          accuracy={calculateAccuracy(correct, incorrect)}
+        />
       </header>
       <main className="main">
-        <Quiz round={round} options={options} selectedOptions={selectedOptions} onSelectOption={handleSelect} />
-        <Controls isRoundOver={isRoundOver} onHearInterval={handleHear} onNextRound={handleNewRound} />
+        <Quiz
+          round={round}
+          options={options}
+          selectedOptions={selectedOptions}
+          onSelectOption={handleSelect}
+        />
+        <Controls
+          isRoundOver={isRoundOver}
+          onHearInterval={handleHear}
+          onNextRound={handleNewRound}
+        />
       </main>
       <footer className="footer">
         {/* prettier-ignore */}

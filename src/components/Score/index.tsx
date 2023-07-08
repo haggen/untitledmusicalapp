@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+import { ReactNode } from "react";
 
-import * as classes from './style.module.css';
+import * as classes from "./style.module.css";
 
 type Props = {
   label: string;
