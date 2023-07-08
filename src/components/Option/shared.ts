@@ -1,4 +1,4 @@
-import { TOption } from "~/src/components/App";
+import { TOption } from "~/src/lib/data";
 
 export function getOptionState(
   selectedOption: TOption,

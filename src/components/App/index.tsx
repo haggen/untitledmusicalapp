@@ -5,12 +5,13 @@ import * as classes from "./style.module.css";
 import { Scoreboard } from "~/src/components/Scoreboard";
 import { Quiz } from "~/src/components/Quiz";
 import { Controls } from "~/src/components/Controls";
-import { Accidental, Pitch, play } from "~/src/lib/synthesizer";
-
-export type TOption = {
-  label: string;
-  value: number;
-};
+import { Accidental, play } from "~/src/lib/synthesizer";
+import {
+  TOption,
+  getOption,
+  getRandomNote,
+  getRandomOption,
+} from "~/src/lib/data";
 
 function calculateAccuracy(correct: number, incorrect: number) {
   if (correct <= 0 || incorrect <= 0) {
@@ -19,67 +20,21 @@ function calculateAccuracy(correct: number, incorrect: number) {
   return Math.round((correct / (correct + incorrect)) * 100);
 }
 
-const availablePitches = [
-  Pitch.A,
-  Pitch.B,
-  Pitch.C,
-  Pitch.D,
-  Pitch.E,
-  Pitch.F,
-  Pitch.G,
+const options = [
+  getOption("Major 3rd"),
+  getOption("Perfect 5th"),
+  getOption("Octave"),
 ];
-
-const availableOctaves = [2, 3, 4];
-
-const availableOptions: TOption[] = [
-  { label: "Minor 2nd", value: 1 },
-  { label: "Major 2nd", value: 2 },
-  { label: "Minor 3rd", value: 3 },
-  { label: "Major 3rd", value: 4 },
-  { label: "Perfect 4th", value: 5 },
-  { label: "Tritone", value: 6 },
-  { label: "Perfect 5th", value: 7 },
-  { label: "Minor 6th", value: 8 },
-  { label: "Major 6th", value: 9 },
-  { label: "Minor 7th", value: 10 },
-  { label: "Major 7th", value: 11 },
-  { label: "Octave", value: 12 },
-];
-
-function drawRandomOption(options: TOption[]) {
-  const index = Math.floor(Math.random() * options.length);
-  return options[index];
-}
-
-function drawRandomNote() {
-  const pitchIndex = Math.floor(Math.random() * availablePitches.length);
-  const octaveIndex = Math.floor(Math.random() * availableOctaves.length);
-
-  return {
-    pitch: availablePitches[pitchIndex],
-    octave: availableOctaves[octaveIndex],
-  };
-}
 
 export function App() {
   const [round, setRound] = useState(1);
-  const [selectedOptions, setSelectedOptions] = useState<TOption[]>([]);
-
   const [{ correct, incorrect }, setScoreboard] = useState({
     correct: 0,
     incorrect: 0,
   });
-
-  const displayedOptions = [
-    availableOptions[3],
-    availableOptions[6],
-    availableOptions[11],
-  ];
-
-  const [referenceNote, setReferenceNote] = useState(drawRandomNote());
-  const [correctOption, setCorrectOption] = useState(
-    drawRandomOption(displayedOptions)
-  );
+  const [selectedOptions, setSelectedOptions] = useState<TOption[]>([]);
+  const [referenceNote, setReferenceNote] = useState(getRandomNote());
+  const [correctOption, setCorrectOption] = useState(getRandomOption(options));
   const isFirstAttempt = Object.keys(selectedOptions).length === 0;
   const isRoundOver = Object.values(selectedOptions).includes(correctOption);
 
@@ -101,7 +56,7 @@ export function App() {
         length: 0.5,
         startTime: n,
       },
-      correctOption.value
+      correctOption.interval
     );
   };
 
@@ -124,23 +79,23 @@ export function App() {
   const handleNewRound = () => {
     setRound((prev) => prev + 1);
     setSelectedOptions([]);
-    setCorrectOption(drawRandomOption(displayedOptions));
-    setReferenceNote(drawRandomNote());
+    setCorrectOption(getRandomOption(options));
+    setReferenceNote(getRandomNote());
   };
 
   return (
-    <>
-      <header className="header">
+    <div className={classes.layout}>
+      <header className={classes.header}>
         <Scoreboard
           correct={correct}
           incorrect={incorrect}
           accuracy={calculateAccuracy(correct, incorrect)}
         />
       </header>
-      <main className="main">
+      <main className={classes.main}>
         <Quiz
           round={round}
-          options={displayedOptions}
+          options={options}
           selectedOptions={selectedOptions}
           correctOption={correctOption}
           onOptionSelect={handleSelect}
@@ -151,10 +106,10 @@ export function App() {
           onNextRound={handleNewRound}
         />
       </main>
-      <footer className="footer">
+      <footer className={classes.footer}>
         {/* prettier-ignore */}
         <p>Made by <a href="https://github.com/haggen/" aria-label="Arthur Corenzan">me</a> and <a href="https://github.com/mtscarvalho" aria-label="Matheus Carvalho">me</a>. Source on GitHub.</p>
       </footer>
-    </>
+    </div>
   );
 }

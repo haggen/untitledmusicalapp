@@ -1,6 +1,6 @@
 import * as classes from "./style.module.css";
 
-import { TOption } from "~/src/components/App";
+import { TOption } from "~/src/lib/data";
 import { Option } from "~/src/components/Option";
 import { getOptionState } from "~/src/components/Option/shared";
 
