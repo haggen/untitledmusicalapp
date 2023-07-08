@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import * as classes from "./style.module.css";
+
 import { Scoreboard } from "~/src/components/Scoreboard";
 import { Quiz } from "~/src/components/Quiz";
 import { Controls } from "~/src/components/Controls";
