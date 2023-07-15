@@ -7,7 +7,7 @@ export type TOption = {
 
 const pool = {
   pitches: [Pitch.A, Pitch.B, Pitch.C, Pitch.D, Pitch.E, Pitch.F, Pitch.G],
-  octaves: [2, 3, 4],
+  octaves: [2, 3],
   options: [
     { label: "Minor 2nd", interval: 1 },
     { label: "Major 2nd", interval: 2 },

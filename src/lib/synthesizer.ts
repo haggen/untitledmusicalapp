@@ -132,7 +132,7 @@ function synthesize(parameters: Synthesis) {
         .fill(parameters.detunePeak)
         .map((n, i) => Math.random() * n * (i % 2 === 0 ? -1 : 1)),
       parameters.startTime,
-      parameters.length
+      parameters.length,
     );
   }
 
@@ -141,15 +141,15 @@ function synthesize(parameters: Synthesis) {
   gainNode.gain.setValueAtTime(0, parameters.startTime);
   gainNode.gain.linearRampToValueAtTime(
     parameters.peakGain,
-    parameters.startTime + parameters.attack
+    parameters.startTime + parameters.attack,
   );
   gainNode.gain.setValueAtTime(
     parameters.peakGain,
-    parameters.startTime + parameters.length - parameters.release
+    parameters.startTime + parameters.length - parameters.release,
   );
   gainNode.gain.linearRampToValueAtTime(
     0,
-    parameters.startTime + parameters.length
+    parameters.startTime + parameters.length,
   );
 
   oscillatorNode.connect(gainNode).connect(audioContext.destination);
@@ -163,7 +163,7 @@ function synthesize(parameters: Synthesis) {
  */
 export function play(
   playable: Playable | (Playable & Note),
-  interval: Interval = 0
+  interval: Interval = 0,
 ) {
   const { startTime = audioContext.currentTime, length } = playable;
 
@@ -176,7 +176,7 @@ export function play(
         pitch,
         accidental: accidental + interval,
       }),
-      type: "sine",
+      type: "square",
       startTime,
       length,
       peakGain: 1,
