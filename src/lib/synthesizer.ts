@@ -59,7 +59,7 @@ export enum Accidental {
 /**
  * A note specification.
  */
-type Note = {
+export type Note = {
   octave: number;
   pitch: Pitch;
   accidental: Accidental;

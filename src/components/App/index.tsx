@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useReducer } from "react";
 
 import * as classes from "./style.module.css";
 
 import { Scoreboard } from "~/src/components/Scoreboard";
 import { Quiz } from "~/src/components/Quiz";
 import { Controls } from "~/src/components/Controls";
-import { Accidental, play } from "~/src/lib/synthesizer";
+import { Accidental, Note, play } from "~/src/lib/synthesizer";
 import {
   TOption,
   getOption,
@@ -26,17 +26,85 @@ const options = [
   getOption("Octave"),
 ];
 
+type State = {
+  round: number;
+  scoreboard: {
+    correct: number;
+    incorrect: number;
+  };
+  correctOption: TOption;
+  selectedOptions: TOption[];
+  referenceNote: Pick<Note, "pitch" | "octave">;
+  isRoundOver: boolean;
+};
+
+type Action =
+  | { type: "new round" }
+  | {
+      type: "select option";
+      payload: TOption;
+    };
+
+function reducer(state: State, action: Action) {
+  switch (action.type) {
+    case "new round":
+      return {
+        round: state.round + 1,
+        scoreboard: state.scoreboard,
+        selectedOptions: [],
+        referenceNote: getRandomNote(),
+        correctOption: getRandomOption(options),
+        isRoundOver: false,
+      };
+    case "select option": {
+      const selectedOptions = [...state.selectedOptions, action.payload];
+      const isFirstAttempt = state.selectedOptions.length === 0;
+      const isCorrect = state.correctOption === action.payload;
+      const scoreboard = { ...state.scoreboard };
+
+      if (isFirstAttempt) {
+        if (isCorrect) {
+          scoreboard.correct += 1;
+        } else {
+          scoreboard.incorrect += 1;
+        }
+      }
+
+      return {
+        ...state,
+        selectedOptions,
+        scoreboard,
+        isRoundOver: selectedOptions.includes(state.correctOption),
+      };
+    }
+    default:
+      return state;
+  }
+}
+
+function getInitialState() {
+  return {
+    round: 1,
+    scoreboard: { correct: 0, incorrect: 0 },
+    selectedOptions: [],
+    referenceNote: getRandomNote(),
+    correctOption: getRandomOption(options),
+    isRoundOver: false,
+  } as State;
+}
+
 export function App() {
-  const [round, setRound] = useState(1);
-  const [{ correct, incorrect }, setScoreboard] = useState({
-    correct: 0,
-    incorrect: 0,
-  });
-  const [selectedOptions, setSelectedOptions] = useState<TOption[]>([]);
-  const [referenceNote, setReferenceNote] = useState(getRandomNote());
-  const [correctOption, setCorrectOption] = useState(getRandomOption(options));
-  const isFirstAttempt = Object.keys(selectedOptions).length === 0;
-  const isRoundOver = Object.values(selectedOptions).includes(correctOption);
+  const [
+    {
+      round,
+      scoreboard: { correct, incorrect },
+      selectedOptions,
+      referenceNote,
+      correctOption,
+      isRoundOver,
+    },
+    dispatch,
+  ] = useReducer(reducer, getInitialState());
 
   const handleHear = () => {
     let n = play({
@@ -61,26 +129,11 @@ export function App() {
   };
 
   const handleSelect = (selectedOption: TOption) => {
-    const isOptionCorrect = correctOption === selectedOption;
-
-    setSelectedOptions((previousSelectedOptions) =>
-      previousSelectedOptions.concat([selectedOption]),
-    );
-
-    if (isFirstAttempt) {
-      if (isOptionCorrect) {
-        setScoreboard((prev) => ({ ...prev, correct: prev.correct + 1 }));
-      } else {
-        setScoreboard((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
-      }
-    }
+    dispatch({ type: "select option", payload: selectedOption });
   };
 
   const handleNewRound = () => {
-    setRound((prev) => prev + 1);
-    setSelectedOptions([]);
-    setCorrectOption(getRandomOption(options));
-    setReferenceNote(getRandomNote());
+    dispatch({ type: "new round" });
   };
 
   return (
