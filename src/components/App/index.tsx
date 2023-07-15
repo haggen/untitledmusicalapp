@@ -56,7 +56,7 @@ export function App() {
         length: 0.5,
         startTime: n,
       },
-      correctOption.interval
+      correctOption.interval,
     );
   };
 
@@ -64,7 +64,7 @@ export function App() {
     const isOptionCorrect = correctOption === selectedOption;
 
     setSelectedOptions((previousSelectedOptions) =>
-      previousSelectedOptions.concat([selectedOption])
+      previousSelectedOptions.concat([selectedOption]),
     );
 
     if (isFirstAttempt) {
