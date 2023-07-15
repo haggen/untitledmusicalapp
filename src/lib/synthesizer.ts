@@ -100,9 +100,9 @@ const A4 = {
  */
 function getSemitonesBetween(a: Note, b: Note) {
   return (
-    (a.octave - b.octave) * 12 +
-    (a.accidental + b.accidental) +
-    (a.pitch + b.pitch)
+    (b.octave - a.octave) * 12 +
+    (b.accidental - a.accidental) +
+    (b.pitch - a.pitch)
   );
 }
 
