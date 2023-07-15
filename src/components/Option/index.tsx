@@ -1,19 +1,21 @@
 import * as classes from "./style.module.css";
 
+import { getOption } from "~/src/lib/data";
+
 type Props = {
-  label: string;
+  id: number;
   state: "correct" | "incorrect" | "unselected";
   onSelect: () => void;
 };
 
-export function Option({ label, state, onSelect }: Props) {
+export function Option({ id, state, onSelect }: Props) {
   return (
     <button
       className={`${classes.option} ${classes[state]}`}
       onClick={onSelect}
       type="button"
     >
-      {label}
+      {getOption(id).label}
     </button>
   );
 }

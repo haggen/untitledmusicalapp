@@ -6,12 +6,7 @@ import { Scoreboard } from "~/src/components/Scoreboard";
 import { Quiz } from "~/src/components/Quiz";
 import { Controls } from "~/src/components/Controls";
 import { Accidental, Note, play } from "~/src/lib/synthesizer";
-import {
-  TOption,
-  getOption,
-  getRandomNote,
-  getRandomOption,
-} from "~/src/lib/data";
+import { getOption, getRandomNote, getRandomOptionId } from "~/src/lib/data";
 
 function calculateAccuracy(correct: number, incorrect: number) {
   if (correct <= 0 || incorrect <= 0) {
@@ -20,10 +15,10 @@ function calculateAccuracy(correct: number, incorrect: number) {
   return Math.round((correct / (correct + incorrect)) * 100);
 }
 
-const options = [
-  getOption("Major 3rd"),
-  getOption("Perfect 5th"),
-  getOption("Octave"),
+const optionIds = [
+  getOption("Major 3rd").id,
+  getOption("Perfect 5th").id,
+  getOption("Octave").id,
 ];
 
 type State = {
@@ -32,8 +27,8 @@ type State = {
     correct: number;
     incorrect: number;
   };
-  correctOption: TOption;
-  selectedOptions: TOption[];
+  correctOptionId: number;
+  selectedOptionIds: number[];
   referenceNote: Pick<Note, "pitch" | "octave">;
   isRoundOver: boolean;
 };
@@ -42,7 +37,7 @@ type Action =
   | { type: "new round" }
   | {
       type: "select option";
-      payload: TOption;
+      payload: number;
     };
 
 function reducer(state: State, action: Action) {
@@ -51,15 +46,15 @@ function reducer(state: State, action: Action) {
       return {
         round: state.round + 1,
         scoreboard: state.scoreboard,
-        selectedOptions: [],
+        selectedOptionIds: [],
         referenceNote: getRandomNote(),
-        correctOption: getRandomOption(options),
+        correctOptionId: getRandomOptionId(optionIds),
         isRoundOver: false,
       };
     case "select option": {
-      const selectedOptions = [...state.selectedOptions, action.payload];
-      const isFirstAttempt = state.selectedOptions.length === 0;
-      const isCorrect = state.correctOption === action.payload;
+      const selectedOptionIds = [...state.selectedOptionIds, action.payload];
+      const isFirstAttempt = state.selectedOptionIds.length === 0;
+      const isCorrect = state.correctOptionId === action.payload;
       const scoreboard = { ...state.scoreboard };
 
       if (isFirstAttempt) {
@@ -72,9 +67,9 @@ function reducer(state: State, action: Action) {
 
       return {
         ...state,
-        selectedOptions,
+        selectedOptionIds,
         scoreboard,
-        isRoundOver: selectedOptions.includes(state.correctOption),
+        isRoundOver: selectedOptionIds.includes(state.correctOptionId),
       };
     }
     default:
@@ -86,9 +81,9 @@ function getInitialState() {
   return {
     round: 1,
     scoreboard: { correct: 0, incorrect: 0 },
-    selectedOptions: [],
+    selectedOptionIds: [],
     referenceNote: getRandomNote(),
-    correctOption: getRandomOption(options),
+    correctOptionId: getRandomOptionId(optionIds),
     isRoundOver: false,
   } as State;
 }
@@ -98,9 +93,9 @@ export function App() {
     {
       round,
       scoreboard: { correct, incorrect },
-      selectedOptions,
+      selectedOptionIds,
       referenceNote,
-      correctOption,
+      correctOptionId,
       isRoundOver,
     },
     dispatch,
@@ -124,12 +119,12 @@ export function App() {
         length: 0.5,
         startTime: n,
       },
-      correctOption.interval,
+      getOption(correctOptionId).interval,
     );
   };
 
-  const handleSelect = (selectedOption: TOption) => {
-    dispatch({ type: "select option", payload: selectedOption });
+  const handleSelect = (selectedOptionId: number) => {
+    dispatch({ type: "select option", payload: selectedOptionId });
   };
 
   const handleNewRound = () => {
@@ -148,10 +143,10 @@ export function App() {
       <main className={classes.main}>
         <Quiz
           round={round}
-          options={options}
-          selectedOptions={selectedOptions}
-          correctOption={correctOption}
-          onOptionSelect={handleSelect}
+          optionIds={optionIds}
+          selectedOptionIds={selectedOptionIds}
+          correctOptionId={correctOptionId}
+          onSelectOption={handleSelect}
         />
         <Controls
           isRoundOver={isRoundOver}

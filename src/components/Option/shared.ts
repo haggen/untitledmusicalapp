@@ -1,15 +1,13 @@
-import { TOption } from "~/src/lib/data";
-
 export function getOptionState(
-  selectedOption: TOption,
-  correctOption: TOption,
-  options: TOption[],
+  selectedOptionId: number,
+  correctOptionId: number,
+  optionIds: number[],
 ) {
-  if (!options.includes(selectedOption)) {
+  if (!optionIds.includes(selectedOptionId)) {
     return "unselected";
   }
 
-  if (selectedOption === correctOption) {
+  if (selectedOptionId === correctOptionId) {
     return "correct";
   }
 

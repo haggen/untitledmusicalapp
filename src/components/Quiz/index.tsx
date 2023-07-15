@@ -1,23 +1,22 @@
 import * as classes from "./style.module.css";
 
-import { TOption } from "~/src/lib/data";
 import { Option } from "~/src/components/Option";
 import { getOptionState } from "~/src/components/Option/shared";
 
 type Props = {
   round: number;
-  options: TOption[];
-  selectedOptions: TOption[];
-  correctOption: TOption;
-  onOptionSelect: (option: TOption) => void;
+  optionIds: number[];
+  selectedOptionIds: number[];
+  correctOptionId: number;
+  onSelectOption: (id: number) => void;
 };
 
 export function Quiz({
   round,
-  options,
-  selectedOptions,
-  correctOption,
-  onOptionSelect: onSelectOption,
+  optionIds: optionIds,
+  selectedOptionIds,
+  correctOptionId,
+  onSelectOption,
 }: Props) {
   return (
     <div className={classes.quiz}>
@@ -26,12 +25,12 @@ export function Quiz({
         <h1 className={classes.title}>What's this interval?</h1>
       </div>
       <div className={classes.options}>
-        {options.map((option) => (
+        {optionIds.map((id) => (
           <Option
-            key={option.label}
-            label={option.label}
-            state={getOptionState(option, correctOption, selectedOptions)}
-            onSelect={() => onSelectOption(option)}
+            key={id}
+            id={id}
+            state={getOptionState(id, correctOptionId, selectedOptionIds)}
+            onSelect={() => onSelectOption(id)}
           />
         ))}
       </div>
